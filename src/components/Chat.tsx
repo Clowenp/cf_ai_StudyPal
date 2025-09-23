@@ -1,11 +1,13 @@
 /** biome-ignore-all lint/correctness/useUniqueElementIds: it's alright */
-import { useEffect, useState, useRef, useCallback, use } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useAgent } from "agents/react";
 import { isToolUIPart } from "ai";
 import { useAgentChat } from "agents/ai-react";
 import type { UIMessage } from "@ai-sdk/react";
 import type { tools } from "../tools";
 import { useVoiceInput } from "../hooks/useVoiceInput";
+import { useStudySession } from "../hooks/useStudySession";
+import { useTimerContext } from "../contexts/TimerContext";
 
 // Component imports
 import { Button } from "@/components/button/Button";
@@ -65,6 +67,10 @@ export function Chat({ theme, toggleTheme, className = '' }: ChatProps) {
     clearTranscript
   } = useVoiceInput();
 
+  // Study session functionality
+  const studySession = useStudySession();
+  const timer = useTimerContext();
+
   const [agentInput, setAgentInput] = useState("");
   const handleAgentInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -82,7 +88,56 @@ export function Chat({ theme, toggleTheme, className = '' }: ChatProps) {
     const message = agentInput;
     setAgentInput("");
 
-    // Send message to agent
+    // Check if this is a study intent
+    const studyIntent = studySession.parseStudyIntent(message);
+    if (studyIntent) {
+      // Start a study session
+      const session = studySession.startStudySession(studyIntent.subject);
+      
+      // Set timer to the recommended duration
+      timer.setTime(session.duration);
+      timer.startTimer();
+      
+      // Generate motivational message
+      const motivationalMessage = studySession.getMotivationalMessage(studyIntent.subject);
+      
+      // Send user message
+      await sendMessage(
+        {
+          role: "user",
+          parts: [{ type: "text", text: message }]
+        },
+        {
+          body: extraData
+        }
+      );
+      
+      // Stop any AI response and send our custom response immediately
+      setTimeout(async () => {
+        try {
+          stop(); // Stop AI from responding
+          
+          await sendMessage(
+            {
+              role: "assistant",
+              parts: [{ 
+                type: "text", 
+                text: `${motivationalMessage}\n\n⏰ **Timer Started:** ${session.duration} minutes for ${studyIntent.subject}` 
+              }]
+            },
+            {
+              body: extraData
+            }
+          );
+        } catch (error) {
+          console.log('Study session response sent');
+        }
+      }, 10);
+      
+      return;
+    }
+
+    // Send regular message to agent
     await sendMessage(
       {
         role: "user",
@@ -127,6 +182,28 @@ export function Chat({ theme, toggleTheme, className = '' }: ChatProps) {
       startListening();
     }
   };
+
+  // Handle timer completion for study sessions
+  useEffect(() => {
+    if (timer.isFinished && studySession.currentSession) {
+      // Complete the study session
+      studySession.completeStudySession(studySession.currentSession.duration);
+      
+      // Send completion message
+      setTimeout(() => {
+        sendMessage(
+          {
+            role: "assistant",
+            parts: [{ 
+              type: "text", 
+              text: `🎉 Great job! You've completed your ${studySession.currentSession?.subject} study session. Time to take a well-deserved break!` 
+            }]
+          },
+          { body: {} }
+        );
+      }, 1000);
+    }
+  }, [timer.isFinished, studySession.currentSession, studySession, sendMessage]);
 
   const pendingToolCallConfirmation = agentMessages.some((m: UIMessage) =>
     m.parts?.some(
@@ -226,6 +303,10 @@ export function Chat({ theme, toggleTheme, className = '' }: ChatProps) {
                     <span className="text-[#F48120]">•</span>
                     <span>Voice input (click the microphone)</span>
                   </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-[#F48120]">•</span>
+                    <span>"I want to study Math" (auto-starts timer)</span>
+                  </li>
                 </ul>
               </div>
             </Card>
@@ -314,7 +395,13 @@ export function Chat({ theme, toggleTheme, className = '' }: ChatProps) {
                               toolName as keyof typeof tools
                             );
 
-                          // Skip rendering the card in debug mode
+                          // Hide all tool calls from regular users unless they need confirmation
+                          // Only show tool calls that require user input or in debug mode
+                          if (!showDebug && !needsConfirmation) {
+                            return null;
+                          }
+
+                          // Skip rendering the card in debug mode (debug shows raw JSON instead)
                           if (showDebug) return null;
 
                           return (

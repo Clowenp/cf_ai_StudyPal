@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useStudyTimer } from '../hooks/useStudyTimer';
+import { useTimerContext } from '../contexts/TimerContext';
 import { Card } from '@/components/card/Card';
 import { Button } from '@/components/button/Button';
 import {
@@ -18,7 +18,7 @@ interface StudyTimerProps {
 
 export function StudyTimer({ className = '' }: StudyTimerProps) {
   const [customMinutes, setCustomMinutes] = useState(25);
-  const timer = useStudyTimer(25);
+  const timer = useTimerContext();
 
   const handleSetCustomTime = () => {
     timer.setTime(customMinutes);

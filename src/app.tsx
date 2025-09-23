@@ -2,6 +2,7 @@
 import { useEffect, useState, use } from "react";
 import { Chat } from "./components/Chat";
 import { StudyTimer } from "./components/StudyTimer";
+import { TimerProvider } from "./contexts/TimerContext";
 
 export default function App() {
   const [theme, setTheme] = useState<"dark" | "light">(() => {
@@ -30,20 +31,22 @@ export default function App() {
   };
 
   return (
-    <div className="h-[100vh] w-full p-4 flex justify-center items-center bg-fixed overflow-hidden">
-      <HasAnthropicKey />
-      <div className="h-[calc(100vh-2rem)] w-full max-w-7xl mx-auto flex gap-4">
-        {/* Chat Section - Left Side */}
-        <div className="flex-1 min-w-0">
-          <Chat theme={theme} toggleTheme={toggleTheme} />
-        </div>
-        
-        {/* Study Timer Section - Right Side */}
-        <div className="w-96 min-w-[24rem]">
-          <StudyTimer />
+    <TimerProvider>
+      <div className="h-[100vh] w-full p-4 flex justify-center items-center bg-fixed overflow-hidden">
+        <HasAnthropicKey />
+        <div className="h-[calc(100vh-2rem)] w-full max-w-7xl mx-auto flex gap-4">
+          {/* Chat Section - Left Side */}
+          <div className="flex-1 min-w-0">
+            <Chat theme={theme} toggleTheme={toggleTheme} />
+          </div>
+          
+          {/* Study Timer Section - Right Side */}
+          <div className="w-96 min-w-[24rem]">
+            <StudyTimer />
+          </div>
         </div>
       </div>
-    </div>
+    </TimerProvider>
   );
 }
 
