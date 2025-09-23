@@ -5,6 +5,7 @@ import { isToolUIPart } from "ai";
 import { useAgentChat } from "agents/ai-react";
 import type { UIMessage } from "@ai-sdk/react";
 import type { tools } from "./tools";
+import { useVoiceInput } from "./hooks/useVoiceInput";
 
 // Component imports
 import { Button } from "@/components/button/Button";
@@ -23,7 +24,9 @@ import {
   Sun,
   Trash,
   PaperPlaneTilt,
-  Stop
+  Stop,
+  Microphone,
+  MicrophoneSlash
 } from "@phosphor-icons/react";
 
 // List of tools that require human confirmation
@@ -74,6 +77,17 @@ export default function Chat() {
     agent: "chat"
   });
 
+  // Voice input functionality
+  const {
+    isListening,
+    isSupported: isVoiceSupported,
+    transcript,
+    error: voiceError,
+    startListening,
+    stopListening,
+    clearTranscript
+  } = useVoiceInput();
+
   const [agentInput, setAgentInput] = useState("");
   const handleAgentInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -118,6 +132,25 @@ export default function Chat() {
   useEffect(() => {
     agentMessages.length > 0 && scrollToBottom();
   }, [agentMessages, scrollToBottom]);
+
+  // Sync voice transcript with input field
+  useEffect(() => {
+    if (transcript) {
+      setAgentInput(transcript);
+    }
+  }, [transcript]);
+
+  // Voice input handlers
+  const handleVoiceToggle = () => {
+    if (isListening) {
+      stopListening();
+    } else {
+      clearTranscript();
+      setAgentInput("");
+      startListening();
+    }
+  };
+
 
   const pendingToolCallConfirmation = agentMessages.some((m: UIMessage) =>
     m.parts?.some(
@@ -387,7 +420,43 @@ export default function Chat() {
                 rows={2}
                 style={{ height: textareaHeight }}
               />
-              <div className="absolute bottom-0 right-0 p-2 w-fit flex flex-row justify-end">
+              
+              {/* Voice Status Indicator */}
+              {(isListening || voiceError) && (
+                <div className="absolute bottom-12 left-2 right-2 p-2 rounded-lg text-xs">
+                  {isListening && (
+                    <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
+                      <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                      Listening... (speak now)
+                    </div>
+                  )}
+                  {voiceError && (
+                    <div className="text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-2 rounded">
+                      Voice Error: {voiceError}
+                    </div>
+                  )}
+                </div>
+              )}
+              
+              <div className="absolute bottom-0 right-0 p-2 w-fit flex flex-row justify-end gap-2">
+                {/* Voice Input Button */}
+                {isVoiceSupported && (
+                  <button
+                    type="button"
+                    onClick={handleVoiceToggle}
+                    className={`inline-flex items-center cursor-pointer justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 rounded-full p-1.5 h-fit border border-neutral-200 dark:border-neutral-800 ${
+                      isListening 
+                        ? 'bg-red-500 text-white hover:bg-red-600 animate-pulse' 
+                        : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700'
+                    }`}
+                    aria-label={isListening ? "Stop voice input" : "Start voice input"}
+                    title={isListening ? "Stop voice input" : "Start voice input"}
+                  >
+                    {isListening ? <MicrophoneSlash size={16} /> : <Microphone size={16} />}
+                  </button>
+                )}
+                
+                {/* Send/Stop Button */}
                 {status === "submitted" || status === "streaming" ? (
                   <button
                     type="button"
