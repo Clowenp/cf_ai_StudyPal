@@ -344,6 +344,20 @@ SYSTEM INSTRUCTION: This is an automatic study session completion message. Do no
           const showAvatar =
             index === 0 || agentMessages[index - 1]?.role !== m.role;
 
+          // Check if this message should be hidden (contains only system instructions)
+          const shouldHideMessage = isUser && m.parts?.every(part => {
+            if (part.type === "text") {
+              const cleanText = part.text.replace(/\n\nSYSTEM INSTRUCTION:.*$/s, '').trim();
+              return !cleanText || cleanText.length === 0;
+            }
+            return false;
+          });
+
+          // Don't render messages that are only system instructions
+          if (shouldHideMessage) {
+            return null;
+          }
+
           return (
             <div key={m.id}>
               {showDebug && (
@@ -369,6 +383,14 @@ SYSTEM INSTRUCTION: This is an automatic study session completion message. Do no
                     <div>
                       {m.parts?.map((part, i) => {
                         if (part.type === "text") {
+                          // Filter out system instructions from display
+                          const cleanText = part.text.replace(/\n\nSYSTEM INSTRUCTION:.*$/s, '').trim();
+                          
+                          // Don't render if the message is only system instructions
+                          if (!cleanText || cleanText.length === 0) {
+                            return null;
+                          }
+                          
                           return (
                             // biome-ignore lint/suspicious/noArrayIndexKey: immutable index
                             <div key={i}>
@@ -378,12 +400,12 @@ SYSTEM INSTRUCTION: This is an automatic study session completion message. Do no
                                     ? "rounded-br-none"
                                     : "rounded-bl-none border-assistant-border"
                                 } ${
-                                  part.text.startsWith("scheduled message")
+                                  cleanText.startsWith("scheduled message")
                                     ? "border-accent/50"
                                     : ""
                                 } relative`}
                               >
-                                {part.text.startsWith(
+                                {cleanText.startsWith(
                                   "scheduled message"
                                 ) && (
                                   <span className="absolute -top-3 -left-2 text-base">
@@ -392,7 +414,7 @@ SYSTEM INSTRUCTION: This is an automatic study session completion message. Do no
                                 )}
                                 <MemoizedMarkdown
                                   id={`${m.id}-${i}`}
-                                  content={part.text.replace(
+                                  content={cleanText.replace(
                                     /^scheduled message: /,
                                     ""
                                   )}
