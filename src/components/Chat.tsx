@@ -101,38 +101,22 @@ export function Chat({ theme, toggleTheme, className = '' }: ChatProps) {
       // Generate motivational message
       const motivationalMessage = studySession.getMotivationalMessage(studyIntent.subject);
       
-      // Send user message
+      // Send a modified message that prevents tool usage and includes our response
+      const modifiedMessage = `${message}
+
+SYSTEM INSTRUCTION: This is a study timer request. The timer has already been started automatically for ${session.duration} minutes. Do not use any tools or functions. Respond with this exact message: "${motivationalMessage}
+
+⏰ **Timer Started:** ${session.duration} minutes for ${studyIntent.subject}"`;
+
       await sendMessage(
         {
           role: "user",
-          parts: [{ type: "text", text: message }]
+          parts: [{ type: "text", text: modifiedMessage }]
         },
         {
           body: extraData
         }
       );
-      
-      // Stop any AI response and send our custom response immediately
-      setTimeout(async () => {
-        try {
-          stop(); // Stop AI from responding
-          
-          await sendMessage(
-            {
-              role: "assistant",
-              parts: [{ 
-                type: "text", 
-                text: `${motivationalMessage}\n\n⏰ **Timer Started:** ${session.duration} minutes for ${studyIntent.subject}` 
-              }]
-            },
-            {
-              body: extraData
-            }
-          );
-        } catch (error) {
-          console.log('Study session response sent');
-        }
-      }, 10);
       
       return;
     }
