@@ -4,6 +4,7 @@ import { Robot, CaretDown } from "@phosphor-icons/react";
 import { Button } from "@/components/button/Button";
 import { Card } from "@/components/card/Card";
 import { GoogleAuthButton } from "@/components/google-auth-button/GoogleAuthButton";
+import { SetupRequiredCard } from "@/components/setup-required/SetupRequiredCard";
 import { APPROVAL } from "@/shared";
 
 interface ToolResultWithContent {
@@ -111,16 +112,41 @@ export function ToolInvocationCard({
               {(() => {
                 const result = toolUIPart.output;
                 
-                // Check if this is a Google auth button response
+                // Check if this is a special response type
                 if (typeof result === 'object' && result !== null && 'type' in result) {
                   const resultObj = result as any;
-                  if (resultObj.type === "google_auth_button" && resultObj.authUrl) {
+                  
+                  // Google auth button (with or without skip)
+                  if ((resultObj.type === "google_auth_button" || resultObj.type === "google_auth_button_with_skip") && resultObj.authUrl) {
                     return (
                       <div className="mt-2">
                         <GoogleAuthButton
                           authUrl={resultObj.authUrl}
                           message={resultObj.message}
                           buttonText={resultObj.buttonText}
+                          skipMessage={resultObj.skipMessage}
+                          skipButtonText={resultObj.skipButtonText}
+                          onSkip={() => {
+                            console.log('User chose to skip Google Calendar setup');
+                          }}
+                        />
+                      </div>
+                    );
+                  }
+                  
+                  // Setup required message
+                  if (resultObj.type === "setup_required") {
+                    return (
+                      <div className="mt-2">
+                        <SetupRequiredCard
+                          message={resultObj.message}
+                          details={resultObj.details}
+                          alternative={resultObj.alternative}
+                          skipMessage={resultObj.skipMessage}
+                          onSkip={() => {
+                            // Tool is already completed, just a visual indicator
+                            console.log('User chose to skip calendar setup');
+                          }}
                         />
                       </div>
                     );

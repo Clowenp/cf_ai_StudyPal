@@ -118,6 +118,59 @@ export default {
       return handleGoogleCallback(request, env);
     }
 
+    // Debug endpoint to test environment variables
+    if (url.pathname === "/debug/env") {
+      return Response.json({
+        hasGoogleClientId: !!env.GOOGLE_CLIENT_ID,
+        hasGoogleClientSecret: !!env.GOOGLE_CLIENT_SECRET,
+        hasGoogleRedirectUri: !!env.GOOGLE_REDIRECT_URI,
+        clientIdPreview: env.GOOGLE_CLIENT_ID?.substring(0, 20) + '...',
+        redirectUri: env.GOOGLE_REDIRECT_URI,
+        nodeEnv: process.env.NODE_ENV
+      });
+    }
+
+    // Debug endpoint to test Google OAuth URL generation
+    if (url.pathname === "/debug/google-url") {
+      const scopes = [
+        'https://www.googleapis.com/auth/calendar',
+        'https://www.googleapis.com/auth/calendar.events'
+      ];
+      
+      const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
+        `client_id=${env.GOOGLE_CLIENT_ID}&` +
+        `redirect_uri=${env.GOOGLE_REDIRECT_URI}&` +
+        `response_type=code&` +
+        `scope=${encodeURIComponent(scopes.join(' '))}&` +
+        `access_type=offline&` +
+        `prompt=consent`;
+
+      return new Response(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>Google OAuth URL Test</title>
+            <style>
+              body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+              .url { background: #f5f5f5; padding: 15px; border-radius: 4px; word-break: break-all; margin: 20px 0; }
+              .button { background: #4285f4; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block; margin: 10px 0; }
+            </style>
+          </head>
+          <body>
+            <h1>Google OAuth URL Test</h1>
+            <p><strong>Client ID:</strong> ${env.GOOGLE_CLIENT_ID}</p>
+            <p><strong>Redirect URI:</strong> ${env.GOOGLE_REDIRECT_URI}</p>
+            <p><strong>Generated URL:</strong></p>
+            <div class="url">${authUrl}</div>
+            <a href="${authUrl}" class="button" target="_blank">Test This URL</a>
+            <p><em>Click the button above to test the OAuth flow. If you get a 500 error, the issue is with your Google Cloud Console configuration.</em></p>
+          </body>
+        </html>
+      `, {
+        headers: { 'Content-Type': 'text/html' }
+      });
+    }
+
     if (url.pathname === "/check-anthropic-key") {
       const hasAnthropicKey = !!process.env.ANTHROPIC_API_KEY;
       return Response.json({

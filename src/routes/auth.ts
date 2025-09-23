@@ -9,9 +9,18 @@ export async function handleGoogleCallback(
   request: Request,
   env: any
 ): Promise<Response> {
+  console.log('Google callback received:', request.url);
+  console.log('Environment variables available:', {
+    hasClientId: !!env.GOOGLE_CLIENT_ID,
+    hasClientSecret: !!env.GOOGLE_CLIENT_SECRET,
+    hasRedirectUri: !!env.GOOGLE_REDIRECT_URI
+  });
+  
   const url = new URL(request.url);
   const code = url.searchParams.get('code');
   const error = url.searchParams.get('error');
+  
+  console.log('Callback parameters:', { code: code?.substring(0, 20) + '...', error });
 
   // Handle authorization errors
   if (error) {

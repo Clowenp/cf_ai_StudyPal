@@ -119,6 +119,13 @@ const authorizeGoogleCalendar = tool({
   }),
   execute: async ({ scopes }) => {
     console.log(`Authorizing Google Calendar with scopes:`, scopes);
+    console.log('Environment check:', {
+      hasClientId: !!process.env.GOOGLE_CLIENT_ID,
+      hasClientSecret: !!process.env.GOOGLE_CLIENT_SECRET,
+      hasRedirectUri: !!process.env.GOOGLE_REDIRECT_URI,
+      clientId: process.env.GOOGLE_CLIENT_ID?.substring(0, 20) + '...',
+      redirectUri: process.env.GOOGLE_REDIRECT_URI
+    });
     
     // Default scopes for calendar read/write access
     const defaultScopes = [
@@ -126,6 +133,16 @@ const authorizeGoogleCalendar = tool({
       'https://www.googleapis.com/auth/calendar.events'
     ];
     const requestedScopes = scopes || defaultScopes;
+    
+    // Check if environment variables are set
+    if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_REDIRECT_URI) {
+      return {
+        type: "setup_required",
+        message: "📅 Google Calendar integration requires setup",
+        details: "To use Google Calendar features, you'll need to configure OAuth credentials. For now, you can continue using other features of the chat.",
+        skipMessage: "No problem! You can still use all other chat features. Just let me know what else I can help you with!"
+      };
+    }
     
     // Generate OAuth URL for user authorization
     const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
@@ -136,11 +153,15 @@ const authorizeGoogleCalendar = tool({
       `access_type=offline&` +
       `prompt=consent`;
     
+    console.log('Generated auth URL:', authUrl);
+    
     return {
-      type: "google_auth_button",
+      type: "google_auth_button_with_skip",
       message: "Click the button below to authorize Google Calendar access:",
       authUrl: authUrl,
-      buttonText: "🔗 Authorize Google Calendar"
+      buttonText: "🔗 Authorize Google Calendar",
+      skipMessage: "If you're having trouble with Google authorization, you can skip this step and continue using other chat features.",
+      skipButtonText: "Skip Calendar Setup"
     };
   }
 });
@@ -161,6 +182,17 @@ const createCalendarEvent = tool({
   }),
   execute: async ({ title, description, startTime, endTime, location, attendees }) => {
     console.log(`Creating calendar event: ${title}`);
+    
+    // Check if Google Calendar is set up
+    if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_REDIRECT_URI) {
+      return {
+        type: "setup_required",
+        message: "📅 Google Calendar integration requires setup",
+        details: `I'd love to create the event "${title}" for you, but Google Calendar integration isn't configured yet.`,
+        alternative: "As an alternative, I can help you format the event details or remind you to add it manually to your calendar.",
+        skipMessage: "No worries! Is there anything else I can help you with instead?"
+      };
+    }
     
     // This would integrate with Google Calendar API
     // For now, we'll return a mock response
