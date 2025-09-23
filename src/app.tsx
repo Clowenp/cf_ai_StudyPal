@@ -2,7 +2,34 @@
 import { useEffect, useState, use } from "react";
 import { Chat } from "./components/Chat";
 import { StudyTimer } from "./components/StudyTimer";
-import { TimerProvider } from "./contexts/TimerContext";
+import { TimerProvider, useTimerContext } from "./contexts/TimerContext";
+
+// Inner component that uses timer context for dynamic layout
+function AppLayout({ theme, toggleTheme }: { theme: "dark" | "light"; toggleTheme: () => void }) {
+  const timer = useTimerContext();
+  const isTimerActive = timer.isRunning || timer.isPaused;
+
+  return (
+    <div className="h-[100vh] w-full p-4 flex justify-center items-center bg-fixed overflow-hidden">
+      <HasAnthropicKey />
+      <div className="h-[calc(100vh-2rem)] w-full max-w-7xl mx-auto flex gap-4 transition-all duration-500 ease-in-out">
+        {/* Chat Section - Left Side */}
+        <div className={`min-w-0 transition-all duration-700 ease-in-out ${
+          isTimerActive ? 'flex-[1] w-[35%]' : 'flex-[4] w-[75%]'
+        }`}>
+          <Chat theme={theme} toggleTheme={toggleTheme} />
+        </div>
+        
+        {/* Study Timer Section - Right Side */}
+        <div className={`min-w-[18rem] transition-all duration-700 ease-in-out ${
+          isTimerActive ? 'flex-[2] w-[65%]' : 'flex-[1] w-[25%]'
+        }`}>
+          <StudyTimer />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function App() {
   const [theme, setTheme] = useState<"dark" | "light">(() => {
@@ -32,20 +59,7 @@ export default function App() {
 
   return (
     <TimerProvider>
-      <div className="h-[100vh] w-full p-4 flex justify-center items-center bg-fixed overflow-hidden">
-        <HasAnthropicKey />
-        <div className="h-[calc(100vh-2rem)] w-full max-w-7xl mx-auto flex gap-4">
-          {/* Chat Section - Left Side */}
-          <div className="flex-1 min-w-0">
-            <Chat theme={theme} toggleTheme={toggleTheme} />
-          </div>
-          
-          {/* Study Timer Section - Right Side */}
-          <div className="w-96 min-w-[24rem]">
-            <StudyTimer />
-          </div>
-        </div>
-      </div>
+      <AppLayout theme={theme} toggleTheme={toggleTheme} />
     </TimerProvider>
   );
 }

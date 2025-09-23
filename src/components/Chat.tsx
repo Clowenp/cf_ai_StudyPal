@@ -70,6 +70,9 @@ export function Chat({ theme, toggleTheme, className = '' }: ChatProps) {
   // Study session functionality
   const studySession = useStudySession();
   const timer = useTimerContext();
+  
+  // Dynamic sizing based on timer state
+  const isTimerActive = timer.isRunning || timer.isPaused;
 
   const [agentInput, setAgentInput] = useState("");
   const handleAgentInputChange = (
@@ -239,8 +242,17 @@ SYSTEM INSTRUCTION: This is an automatic study session completion message. Do no
   };
 
   return (
-    <div className={`flex flex-col h-full shadow-xl rounded-md overflow-hidden relative border border-neutral-300 dark:border-neutral-800 ${className}`}>
-      <div className="px-4 py-3 border-b border-neutral-300 dark:border-neutral-800 flex items-center gap-3 sticky top-0 z-10">
+    <div className={`flex flex-col h-full rounded-md overflow-hidden relative transition-all duration-500 ease-in-out ${
+      isTimerActive 
+        ? 'shadow-lg border-2 border-[#F48120]/20' 
+        : 'shadow-2xl border-2 border-[#F48120]/30'
+    } ${className}`}
+    style={{
+      boxShadow: isTimerActive 
+        ? '0 10px 25px -5px rgba(244, 129, 32, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1)' 
+        : '0 25px 50px -12px rgba(244, 129, 32, 0.15), 0 25px 25px -12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.1)'
+    }}>
+      <div className="px-4 py-3 border-b border-neutral-300 dark:border-neutral-800 flex items-center gap-3 sticky top-0 z-10 bg-gradient-to-r from-transparent via-[#F48120]/5 to-transparent">
         <div className="flex items-center justify-center h-8 w-8">
           <svg
             width="28px"
@@ -260,7 +272,9 @@ SYSTEM INSTRUCTION: This is an automatic study session completion message. Do no
         </div>
 
         <div className="flex-1">
-          <h2 className="font-semibold text-base">AI Chat Agent</h2>
+          <h2 className="font-semibold text-base bg-gradient-to-r from-[#F48120] to-[#F48120]/80 bg-clip-text text-transparent">
+            Study Pal
+          </h2>
         </div>
 
         <div className="flex items-center gap-2 mr-2">
@@ -302,16 +316,11 @@ SYSTEM INSTRUCTION: This is an automatic study session completion message. Do no
                 <div className="bg-[#F48120]/10 text-[#F48120] rounded-full p-3 inline-flex">
                   <Robot size={24} />
                 </div>
-                <h3 className="font-semibold text-lg">Welcome to AI Chat</h3>
+                <h3 className="font-semibold text-lg">Study Pal</h3>
                 <p className="text-muted-foreground text-sm">
-                  Start a conversation with your AI assistant. Try asking
-                  about:
+                  Study with me! Ask me about anything ...
                 </p>
                 <ul className="text-sm text-left space-y-2">
-                  <li className="flex items-center gap-2">
-                    <span className="text-[#F48120]">•</span>
-                    <span>Weather information for any city</span>
-                  </li>
                   <li className="flex items-center gap-2">
                     <span className="text-[#F48120]">•</span>
                     <span>Local time in different locations</span>
