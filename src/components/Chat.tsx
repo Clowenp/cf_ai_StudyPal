@@ -109,7 +109,7 @@ export function Chat({ theme, toggleTheme, className = '' }: ChatProps) {
 
 SYSTEM INSTRUCTION: This is a study timer request. The timer has already been started automatically for ${session.duration} minutes. Do not use any tools or functions. Respond with this exact message: "${motivationalMessage}
 
-⏰ **Timer Started:** ${session.duration} minutes for ${studyIntent.subject}"`;
+**Timer Started:** ${session.duration} minutes for ${studyIntent.subject}"`;
 
       await sendMessage(
         {
