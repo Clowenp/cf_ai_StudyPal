@@ -19,7 +19,7 @@ A starter template for building AI-powered chat agents using Cloudflare's Agent 
 ## Prerequisites
 
 - Cloudflare account
-- OpenAI API key
+- Anthropic API key
 
 ## Quick Start
 
@@ -40,7 +40,7 @@ npm install
 Create a `.dev.vars` file:
 
 ```env
-OPENAI_API_KEY=your_openai_api_key
+ANTHROPIC_API_KEY=your_anthropic_api_key
 ```
 
 4. Run locally:
