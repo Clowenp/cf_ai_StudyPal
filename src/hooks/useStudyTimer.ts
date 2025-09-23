@@ -6,6 +6,7 @@ export interface StudyTimerState {
   isRunning: boolean;
   isPaused: boolean;
   isFinished: boolean;
+  wasStopped: boolean; // true if timer was manually stopped
 }
 
 export interface StudyTimerControls {
@@ -15,6 +16,7 @@ export interface StudyTimerControls {
   resetTimer: () => void;
   setTime: (minutes: number) => void;
   addTime: (minutes: number) => void;
+  clearTimer: () => void; // Completely clear all timer state
 }
 
 export interface StudyTimerFormatted {
@@ -29,6 +31,7 @@ export function useStudyTimer(initialMinutes: number = 25): StudyTimerState & St
   const [totalTime, setTotalTime] = useState(initialMinutes * 60);
   const [isRunning, setIsRunning] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [wasStopped, setWasStopped] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Calculate derived values
@@ -52,11 +55,10 @@ export function useStudyTimer(initialMinutes: number = 25): StudyTimerState & St
 
   // Start the timer
   const startTimer = useCallback(() => {
-    if (timeRemaining > 0) {
-      setIsRunning(true);
-      setIsPaused(false);
-    }
-  }, [timeRemaining]);
+    setIsRunning(true);
+    setIsPaused(false);
+    setWasStopped(false); // Reset stopped flag when starting
+  }, []);
 
   // Pause the timer
   const pauseTimer = useCallback(() => {
@@ -68,6 +70,7 @@ export function useStudyTimer(initialMinutes: number = 25): StudyTimerState & St
   const stopTimer = useCallback(() => {
     setIsRunning(false);
     setIsPaused(false);
+    setWasStopped(true); // Mark as manually stopped
     setTimeRemaining(totalTime);
   }, [totalTime]);
 
@@ -93,6 +96,15 @@ export function useStudyTimer(initialMinutes: number = 25): StudyTimerState & St
     setTimeRemaining((prev) => prev + additionalTime);
     setTotalTime((prev) => prev + additionalTime);
   }, []);
+
+  // Completely clear all timer state
+  const clearTimer = useCallback(() => {
+    setIsRunning(false);
+    setIsPaused(false);
+    setWasStopped(false);
+    setTimeRemaining(initialMinutes * 60);
+    setTotalTime(initialMinutes * 60);
+  }, [initialMinutes]);
 
   // Effect to handle the timer interval
   useEffect(() => {
@@ -128,6 +140,7 @@ export function useStudyTimer(initialMinutes: number = 25): StudyTimerState & St
     isRunning,
     isPaused,
     isFinished,
+    wasStopped,
     
     // Controls
     startTimer,
@@ -136,6 +149,7 @@ export function useStudyTimer(initialMinutes: number = 25): StudyTimerState & St
     resetTimer,
     setTime,
     addTime,
+    clearTimer,
     
     // Formatted values
     minutes,

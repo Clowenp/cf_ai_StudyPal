@@ -167,27 +167,60 @@ SYSTEM INSTRUCTION: This is a study timer request. The timer has already been st
     }
   };
 
-  // Handle timer completion for study sessions
+  // Handle timer completion and stopping for study sessions
+  const [processedSessionId, setProcessedSessionId] = useState<string | null>(null);
+  
   useEffect(() => {
-    if (timer.isFinished && studySession.currentSession) {
-      // Complete the study session
-      studySession.completeStudySession(studySession.currentSession.duration);
+    // Only process if we have a current session and it hasn't been processed yet
+    if ((timer.isFinished || timer.wasStopped) && 
+        studySession.currentSession && 
+        studySession.currentSession.id !== processedSessionId) {
       
-      // Send completion message
-      setTimeout(() => {
-        sendMessage(
-          {
-            role: "assistant",
-            parts: [{ 
-              type: "text", 
-              text: `🎉 Great job! You've completed your ${studySession.currentSession?.subject} study session. Time to take a well-deserved break!` 
-            }]
-          },
-          { body: {} }
+      // Mark this session as being processed to prevent duplicates
+      setProcessedSessionId(studySession.currentSession.id);
+      
+      // Calculate actual study time
+      const actualMinutes = Math.round((timer.totalTime - timer.timeRemaining) / 60);
+      
+      // Complete the study session with actual time studied
+      const completedSession = studySession.completeStudySession(actualMinutes);
+      
+      if (completedSession) {
+        // Generate completion message
+        const completionMessage = studySession.getStudyCompletionMessage(
+          completedSession, 
+          timer.isFinished // true if completed, false if stopped early
         );
-      }, 1000);
+        
+        // Send completion message with special instruction to prevent AI tool usage
+        setTimeout(() => {
+          const combinedMessage = `${completionMessage}
+
+SYSTEM INSTRUCTION: This is an automatic study session completion message. Do not use any tools or functions. Simply acknowledge this completion with a brief encouraging response. Do not call getLocalTime, getWeatherInformation, or any other tools.`;
+
+          sendMessage(
+            {
+              role: "user",
+              parts: [{ type: "text", text: combinedMessage }]
+            },
+            { body: {} }
+          );
+        }, 500);
+        
+        // Clear timer state completely after processing to prevent re-triggering
+        setTimeout(() => {
+          timer.clearTimer(); // Completely reset all timer flags
+        }, 1500);
+      }
     }
-  }, [timer.isFinished, studySession.currentSession, studySession, sendMessage]);
+    
+    // Reset processed session when a new session starts
+    if (studySession.currentSession && 
+        studySession.currentSession.id !== processedSessionId && 
+        !timer.isFinished && !timer.wasStopped) {
+      setProcessedSessionId(null);
+    }
+  }, [timer.isFinished, timer.wasStopped, timer.timeRemaining, timer.totalTime, studySession.currentSession, processedSessionId, studySession, sendMessage, timer]);
 
   const pendingToolCallConfirmation = agentMessages.some((m: UIMessage) =>
     m.parts?.some(
@@ -379,18 +412,13 @@ SYSTEM INSTRUCTION: This is a study timer request. The timer has already been st
                               toolName as keyof typeof tools
                             );
 
-                          // Hide all tool calls from regular users unless they need confirmation
-                          // Only show tool calls that require user input or in debug mode
-                          if (!showDebug && !needsConfirmation) {
-                            return null;
-                          }
-
                           // Skip rendering the card in debug mode (debug shows raw JSON instead)
                           if (showDebug) return null;
 
+                          // Always render the ToolInvocationCard to ensure proper tool execution
+                          // The card itself should handle automatic execution vs confirmation
                           return (
                             <ToolInvocationCard
-                              // biome-ignore lint/suspicious/noArrayIndexKey: using index is safe here as the array is static
                               key={`${toolCallId}-${i}`}
                               toolUIPart={part}
                               toolCallId={toolCallId}

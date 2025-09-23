@@ -67,7 +67,7 @@ export function useStudySession() {
     return null;
   }, []);
 
-  // Get average study time for a subject
+  // Get adaptive study time for a subject using formula: (30 + lastStudyTime) / 2
   const getAverageStudyTime = useCallback((subject: string): number => {
     const subjectSessions = sessions.filter(
       s => s.subject.toLowerCase() === subject.toLowerCase() && s.completed
@@ -77,8 +77,14 @@ export function useStudySession() {
       return DEFAULT_STUDY_TIME;
     }
 
-    const totalTime = subjectSessions.reduce((sum, session) => sum + session.duration, 0);
-    return Math.round(totalTime / subjectSessions.length);
+    // Get the most recent completed session for this subject
+    const lastSession = subjectSessions
+      .sort((a, b) => b.startTime.getTime() - a.startTime.getTime())[0];
+    
+    // Adaptive formula: (30 + lastStudyTime) / 2
+    const adaptiveTime = (DEFAULT_STUDY_TIME + lastSession.duration) / 2;
+    
+    return Math.round(adaptiveTime);
   }, [sessions]);
 
   // Start a new study session
@@ -101,12 +107,15 @@ export function useStudySession() {
 
   // Complete current study session
   const completeStudySession = useCallback((actualDuration?: number) => {
-    if (!currentSession) return;
+    if (!currentSession) return null;
+
+    const endTime = new Date();
+    const actualMinutes = actualDuration || Math.round((endTime.getTime() - currentSession.startTime.getTime()) / (1000 * 60));
 
     const updatedSession: StudySession = {
       ...currentSession,
-      endTime: new Date(),
-      duration: actualDuration || currentSession.duration,
+      endTime,
+      duration: actualMinutes,
       completed: true,
     };
 
@@ -114,6 +123,8 @@ export function useStudySession() {
       prev.map(s => s.id === currentSession.id ? updatedSession : s)
     );
     setCurrentSession(null);
+    
+    return updatedSession;
   }, [currentSession]);
 
   // Cancel current study session
@@ -179,6 +190,18 @@ export function useStudySession() {
     return messages[Math.floor(Math.random() * messages.length)];
   }, []);
 
+  // Generate study completion message
+  const getStudyCompletionMessage = useCallback((session: StudySession, wasCompleted: boolean): string => {
+    const timeStudied = session.duration;
+    const timeText = timeStudied === 1 ? '1 minute' : `${timeStudied} minutes`;
+    
+    if (wasCompleted) {
+      return `I studied ${session.subject} for ${timeText} (completed full session) 🎉`;
+    } else {
+      return `I studied ${session.subject} for ${timeText} (stopped early)`;
+    }
+  }, []);
+
   return {
     // State
     sessions,
@@ -194,5 +217,6 @@ export function useStudySession() {
     getAverageStudyTime,
     getStudyStats,
     getMotivationalMessage,
+    getStudyCompletionMessage,
   };
 }
