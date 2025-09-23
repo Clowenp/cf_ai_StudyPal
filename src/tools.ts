@@ -109,6 +109,100 @@ const cancelScheduledTask = tool({
 });
 
 /**
+ * Google Calendar authorization tool that executes automatically
+ * This will initiate the OAuth flow for Google Calendar access
+ */
+const authorizeGoogleCalendar = tool({
+  description: "Authorize access to Google Calendar to read and write events",
+  inputSchema: z.object({
+    scopes: z.array(z.string()).optional().describe("Calendar scopes to request (defaults to read/write)")
+  }),
+  execute: async ({ scopes }) => {
+    console.log(`Authorizing Google Calendar with scopes:`, scopes);
+    
+    // Default scopes for calendar read/write access
+    const defaultScopes = [
+      'https://www.googleapis.com/auth/calendar',
+      'https://www.googleapis.com/auth/calendar.events'
+    ];
+    const requestedScopes = scopes || defaultScopes;
+    
+    // Generate OAuth URL for user authorization
+    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
+      `client_id=${process.env.GOOGLE_CLIENT_ID}&` +
+      `redirect_uri=${process.env.GOOGLE_REDIRECT_URI}&` +
+      `response_type=code&` +
+      `scope=${encodeURIComponent(requestedScopes.join(' '))}&` +
+      `access_type=offline&` +
+      `prompt=consent`;
+    
+    return {
+      type: "google_auth_button",
+      message: "Click the button below to authorize Google Calendar access:",
+      authUrl: authUrl,
+      buttonText: "🔗 Authorize Google Calendar"
+    };
+  }
+});
+
+/**
+ * Create a Google Calendar event tool that executes automatically
+ * This will create a new event in the user's Google Calendar
+ */
+const createCalendarEvent = tool({
+  description: "Create a new event in Google Calendar",
+  inputSchema: z.object({
+    title: z.string().describe("Event title"),
+    description: z.string().optional().describe("Event description"),
+    startTime: z.string().describe("Start time in ISO format (e.g., 2024-01-15T10:00:00)"),
+    endTime: z.string().describe("End time in ISO format (e.g., 2024-01-15T11:00:00)"),
+    location: z.string().optional().describe("Event location"),
+    attendees: z.array(z.string()).optional().describe("List of attendee email addresses")
+  }),
+  execute: async ({ title, description, startTime, endTime, location, attendees }) => {
+    console.log(`Creating calendar event: ${title}`);
+    
+    // This would integrate with Google Calendar API
+    // For now, we'll return a mock response
+    const event = {
+      title,
+      description,
+      startTime,
+      endTime,
+      location,
+      attendees: attendees || []
+    };
+    
+    // TODO: Implement actual Google Calendar API call
+    // const response = await createGoogleCalendarEvent(event);
+    
+    return {
+      message: `Calendar event "${title}" would be created successfully`,
+      event: event,
+      note: "Google Calendar API integration is pending - this is a preview of what would be created"
+    };
+  }
+});
+
+/**
+ * List upcoming Google Calendar events tool that executes automatically
+ * This will fetch upcoming events from the user's calendar
+ */
+const listCalendarEvents = tool({
+  description: "List upcoming events from Google Calendar",
+  inputSchema: z.object({
+    maxResults: z.number().optional().describe("Maximum number of events to return (default: 10)"),
+    timeMin: z.string().optional().describe("Start time filter in ISO format"),
+    timeMax: z.string().optional().describe("End time filter in ISO format")
+  }),
+  execute: async ({ maxResults = 10, timeMin, timeMax }) => {
+    // This will be implemented to fetch events from Google Calendar API
+    console.log(`Fetching ${maxResults} calendar events`);
+    return "Calendar events fetched successfully (implementation pending)";
+  }
+});
+
+/**
  * Export all available tools
  * These will be provided to the AI model to describe available capabilities
  */
@@ -117,7 +211,10 @@ export const tools = {
   getLocalTime,
   scheduleTask,
   getScheduledTasks,
-  cancelScheduledTask
+  cancelScheduledTask,
+  authorizeGoogleCalendar,
+  createCalendarEvent,
+  listCalendarEvents
 } satisfies ToolSet;
 
 /**

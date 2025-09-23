@@ -16,6 +16,7 @@ import {
 import { anthropic } from "@ai-sdk/anthropic";
 import { processToolCalls, cleanupMessages } from "./utils";
 import { tools, executions } from "./tools";
+import { handleGoogleCallback } from "./routes/auth";
 // import { env } from "cloudflare:workers";
 
 const model = anthropic("claude-3-haiku-20240307");
@@ -111,6 +112,11 @@ If the user asks to schedule a task, use the schedule tool to schedule the task.
 export default {
   async fetch(request: Request, env: Env, _ctx: ExecutionContext) {
     const url = new URL(request.url);
+
+    // Handle Google Calendar OAuth callback
+    if (url.pathname === "/auth/callback") {
+      return handleGoogleCallback(request, env);
+    }
 
     if (url.pathname === "/check-anthropic-key") {
       const hasAnthropicKey = !!process.env.ANTHROPIC_API_KEY;

@@ -17,6 +17,7 @@ import { Toggle } from "@/components/toggle/Toggle";
 import { Textarea } from "@/components/textarea/Textarea";
 import { MemoizedMarkdown } from "@/components/memoized-markdown";
 import { ToolInvocationCard } from "@/components/tool-invocation-card/ToolInvocationCard";
+import { GoogleAuthButton } from "@/components/google-auth-button/GoogleAuthButton";
 
 // Icon imports
 import {
@@ -412,13 +413,35 @@ SYSTEM INSTRUCTION: This is an automatic study session completion message. Do no
                                     🕒
                                   </span>
                                 )}
-                                <MemoizedMarkdown
-                                  id={`${m.id}-${i}`}
-                                  content={cleanText.replace(
+                                {(() => {
+                                  const processedText = cleanText.replace(
                                     /^scheduled message: /,
                                     ""
-                                  )}
-                                />
+                                  );
+                                  
+                                  // Check if this is a Google auth button response
+                                  try {
+                                    const parsed = JSON.parse(processedText);
+                                    if (parsed.type === "google_auth_button" && parsed.authUrl) {
+                                      return (
+                                        <GoogleAuthButton
+                                          authUrl={parsed.authUrl}
+                                          message={parsed.message}
+                                          buttonText={parsed.buttonText}
+                                        />
+                                      );
+                                    }
+                                  } catch (e) {
+                                    // Not JSON, continue with regular markdown
+                                  }
+                                  
+                                  return (
+                                    <MemoizedMarkdown
+                                      id={`${m.id}-${i}`}
+                                      content={processedText}
+                                    />
+                                  );
+                                })()}
                               </Card>
                               <p
                                 className={`text-xs text-muted-foreground mt-1 ${

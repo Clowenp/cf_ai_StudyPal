@@ -1,3 +1,7 @@
 OPENAI_API_KEY=sk-proj-1234567890
 # Optional - Cloudflare AI Gateway https://developers.cloudflare.com/ai-gateway/
 # GATEWAY_BASE_URL=https://gateway.ai.cloudflare.com/v1/..
+# Google Calendar API Configuration
+GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+GOOGLE_REDIRECT_URI=https://odd-star-cf31.surfo8970bb.workers.dev/auth/callback

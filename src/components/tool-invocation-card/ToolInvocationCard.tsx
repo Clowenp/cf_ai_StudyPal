@@ -3,6 +3,7 @@ import type { ToolUIPart } from "ai";
 import { Robot, CaretDown } from "@phosphor-icons/react";
 import { Button } from "@/components/button/Button";
 import { Card } from "@/components/card/Card";
+import { GoogleAuthButton } from "@/components/google-auth-button/GoogleAuthButton";
 import { APPROVAL } from "@/shared";
 
 interface ToolResultWithContent {
@@ -107,30 +108,52 @@ export function ToolInvocationCard({
               <h5 className="text-xs font-medium mb-1 text-muted-foreground">
                 Result:
               </h5>
-              <pre className="bg-background/80 p-2 rounded-md text-xs overflow-auto whitespace-pre-wrap break-words max-w-[450px]">
-                {(() => {
-                  const result = toolUIPart.output;
-                  if (isToolResultWithContent(result)) {
-                    return result.content
-                      .map((item: { type: string; text: string }) => {
-                        if (
-                          item.type === "text" &&
-                          item.text.startsWith("\n~ Page URL:")
-                        ) {
-                          const lines = item.text.split("\n").filter(Boolean);
-                          return lines
-                            .map(
-                              (line: string) => `- ${line.replace("\n~ ", "")}`
-                            )
-                            .join("\n");
-                        }
-                        return item.text;
-                      })
-                      .join("\n");
+              {(() => {
+                const result = toolUIPart.output;
+                
+                // Check if this is a Google auth button response
+                if (typeof result === 'object' && result !== null && 'type' in result) {
+                  const resultObj = result as any;
+                  if (resultObj.type === "google_auth_button" && resultObj.authUrl) {
+                    return (
+                      <div className="mt-2">
+                        <GoogleAuthButton
+                          authUrl={resultObj.authUrl}
+                          message={resultObj.message}
+                          buttonText={resultObj.buttonText}
+                        />
+                      </div>
+                    );
                   }
-                  return JSON.stringify(result, null, 2);
-                })()}
-              </pre>
+                }
+                
+                // Default result display
+                return (
+                  <pre className="bg-background/80 p-2 rounded-md text-xs overflow-auto whitespace-pre-wrap break-words max-w-[450px]">
+                    {(() => {
+                      if (isToolResultWithContent(result)) {
+                        return result.content
+                          .map((item: { type: string; text: string }) => {
+                            if (
+                              item.type === "text" &&
+                              item.text.startsWith("\n~ Page URL:")
+                            ) {
+                              const lines = item.text.split("\n").filter(Boolean);
+                              return lines
+                                .map(
+                                  (line: string) => `- ${line.replace("\n~ ", "")}`
+                                )
+                                .join("\n");
+                            }
+                            return item.text;
+                          })
+                          .join("\n");
+                      }
+                      return JSON.stringify(result, null, 2);
+                    })()}
+                  </pre>
+                );
+              })()}
             </div>
           )}
         </div>
