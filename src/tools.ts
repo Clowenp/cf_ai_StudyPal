@@ -16,10 +16,10 @@ const getWeatherInformation = tool({
   // Omitting execute function makes this tool require human confirmation
 });
 
-const getTopNews = tool({
-  description: "Get the top news from BBC, CNN, or Fox News",
+const scrapeWebsite = tool({
+  description: "Scrape and summarize content from any website URL for study or research purposes",
   inputSchema: z.object({ 
-    source: z.string().describe("News source: 'bbc', 'cnn', or 'fox'") 
+    url: z.string().describe("The URL to scrape and summarize")
   })
   // Omitting execute function makes this tool require human confirmation
 });
@@ -227,7 +227,7 @@ const listCalendarEvents = tool({
  */
 export const tools = {
   getWeatherInformation,
-  getTopNews,
+  scrapeWebsite,
   getLocalTime,
   scheduleTask,
   getScheduledTasks,
@@ -247,58 +247,56 @@ export const executions = {
     console.log(`Getting weather information for ${city}`);
     return `The weather in ${city} is sunny`;
   },
-  getTopNews: async ({source} : {source: string}) => {
-    console.log(`Getting top news from ${source}`);
+  scrapeWebsite: async ({url} : {url: string}) => {
+    console.log(`Scraping website: ${url}`);
     
-    if (!["cnn", "bbc", "fox"].includes(source.toLowerCase())) {
-      return `I don't know about that news source. Please try one of these: CNN, BBC, or Fox News.`;
+    // Validate URL format
+    try {
+      new URL(url);
+    } catch (error) {
+      return `❌ Invalid URL format: "${url}". Please provide a valid URL starting with http:// or https://`;
     }
-
+    
     // Check if Firecrawl API key is available
     if (!process.env.FIRECRAWL_API_KEY) {
-      return `📰 News scraping requires Firecrawl API setup. For now, I can help you with other tasks like scheduling, taking notes, or answering questions. What would you like to do instead?`;
+      return `🌐 Website scraping requires Firecrawl API setup. For now, I can help you with other tasks like scheduling, taking notes, or answering questions. What would you like to do instead?`;
     }
 
     try {
       // Dynamic import to avoid build issues
       const { default: FirecrawlApp } = await import("@mendable/firecrawl-js");
       const app = new FirecrawlApp({ apiKey: process.env.FIRECRAWL_API_KEY });
-      
-      let url: string;
-      const sourceLower = source.toLowerCase();
-      switch(sourceLower) {
-        case "cnn":
-          url = "https://www.cnn.com";
-          break;
-        case "bbc":
-          url = "https://www.bbc.com/news";
-          break;
-        case "fox":
-          url = "https://www.foxnews.com";
-          break;
-        default:
-          url = "https://www.cnn.com";
-      }
 
-      console.log(`Scraping news from: ${url}`);
+      console.log(`Scraping content from: ${url}`);
       const result = await app.scrapeUrl(url, { 
         formats: ["markdown"],
         onlyMainContent: true 
       });
 
       if (!result.success) {
-        return `I was unable to get the news from ${source.toUpperCase()}. The website might be temporarily unavailable. Please try again later.`;
+        return `❌ Unable to scrape content from ${url}. The website might be:\n- Temporarily unavailable\n- Requiring authentication\n- Blocking automated access\n- Not accessible\n\nPlease try again later or check if the URL is correct.`;
       }
 
-      // Truncate content to avoid overwhelming response
+      // Process and format content
       const content = result.markdown || result.content || "";
-      const truncatedContent = content.length > 3000 ? content.substring(0, 3000) + "..." : content;
       
-      return `📰 **Top News from ${source.toUpperCase()}:**\n\n${truncatedContent}`;
+      if (!content.trim()) {
+        return `⚠️ No content found at ${url}. The page might be empty or require JavaScript to load content.`;
+      }
+      
+      // Truncate content for readability
+      const truncatedContent = content.length > 4000 
+        ? content.substring(0, 4000) + "...\n\n*[Content truncated for readability]*" 
+        : content;
+      
+      // Extract domain for display
+      const domain = new URL(url).hostname;
+      
+      return `🌐 **Content from ${domain}:**\n\n${truncatedContent}\n\n---\n*📝 Content scraped from: ${url}*`;
       
     } catch (error) {
-      console.error("Error scraping news:", error);
-      return `I encountered an error while fetching news from ${source.toUpperCase()}. Please try again later.`;
+      console.error("Error scraping website:", error);
+      return `❌ Error scraping ${url}: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again later or check if the URL is accessible.`;
     }
   }
 };

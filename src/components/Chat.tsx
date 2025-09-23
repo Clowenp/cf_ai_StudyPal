@@ -35,7 +35,7 @@ import {
 // NOTE: this should match the tools that don't have execute functions in tools.ts
 const toolsRequiringConfirmation: (keyof typeof tools)[] = [
   "getWeatherInformation",
-  "getTopNews"
+  "scrapeWebsite"
 ];
 
 interface ChatProps {
