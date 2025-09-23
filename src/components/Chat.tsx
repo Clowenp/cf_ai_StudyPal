@@ -17,7 +17,6 @@ import { Toggle } from "@/components/toggle/Toggle";
 import { Textarea } from "@/components/textarea/Textarea";
 import { MemoizedMarkdown } from "@/components/memoized-markdown";
 import { ToolInvocationCard } from "@/components/tool-invocation-card/ToolInvocationCard";
-import { GoogleAuthButton } from "@/components/google-auth-button/GoogleAuthButton";
 
 // Icon imports
 import {
@@ -46,6 +45,7 @@ interface ChatProps {
 
 export function Chat({ theme, toggleTheme, className = '' }: ChatProps) {
   const [showDebug, setShowDebug] = useState(false);
+  const [completedToolCalls, setCompletedToolCalls] = useState<Set<string>>(new Set());
   const [textareaHeight, setTextareaHeight] = useState("auto");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -302,7 +302,10 @@ SYSTEM INSTRUCTION: This is an automatic study session completion message. Do no
           size="md"
           shape="square"
           className="rounded-full h-9 w-9"
-          onClick={clearHistory}
+          onClick={() => {
+            clearHistory();
+            setCompletedToolCalls(new Set()); // Clear completed tool calls when clearing history
+          }}
         >
           <Trash size={20} />
         </Button>
@@ -419,17 +422,12 @@ SYSTEM INSTRUCTION: This is an automatic study session completion message. Do no
                                     ""
                                   );
                                   
-                                  // Check if this is a Google auth button response
+                                  // Check if this is a special tool result that should only be displayed in ToolInvocationCard
                                   try {
                                     const parsed = JSON.parse(processedText);
-                                    if (parsed.type === "google_auth_button" && parsed.authUrl) {
-                                      return (
-                                        <GoogleAuthButton
-                                          authUrl={parsed.authUrl}
-                                          message={parsed.message}
-                                          buttonText={parsed.buttonText}
-                                        />
-                                      );
+                                    if (parsed.type && (parsed.type.includes("google_auth_button") || parsed.type === "setup_required")) {
+                                      // Don't render these as regular messages - they should only appear in ToolInvocationCards
+                                      return null;
                                     }
                                   } catch (e) {
                                     // Not JSON, continue with regular markdown
@@ -469,27 +467,31 @@ SYSTEM INSTRUCTION: This is an automatic study session completion message. Do no
                           // Skip rendering the card in debug mode (debug shows raw JSON instead)
                           if (showDebug) return null;
 
+                          // Check if this tool call has already been completed
+                          const isCompleted = completedToolCalls.has(toolCallId);
+
                           // Always render the ToolInvocationCard to ensure proper tool execution
                           // The card itself should handle automatic execution vs confirmation
                           return (
                             <ToolInvocationCard
-                              key={`${toolCallId}-${i}`}
+                              key={toolCallId} // Use just toolCallId to prevent duplicates
                               toolUIPart={part}
                               toolCallId={toolCallId}
                               needsConfirmation={needsConfirmation}
+                              isCompleted={isCompleted}
                               onSubmit={({ toolCallId, result }) => {
+                                // Mark as completed
+                                setCompletedToolCalls(prev => new Set(prev).add(toolCallId));
                                 addToolResult({
                                   tool: part.type.replace("tool-", ""),
                                   toolCallId,
                                   output: result
                                 });
                               }}
-                              addToolResult={(toolCallId, result) => {
-                                addToolResult({
-                                  tool: part.type.replace("tool-", ""),
-                                  toolCallId,
-                                  output: result
-                                });
+                              addToolResult={(params) => {
+                                // Mark as completed when skip is used
+                                setCompletedToolCalls(prev => new Set(prev).add(params.toolCallId));
+                                addToolResult(params);
                               }}
                             />
                           );

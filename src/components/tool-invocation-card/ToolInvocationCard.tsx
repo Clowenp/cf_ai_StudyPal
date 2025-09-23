@@ -26,6 +26,7 @@ interface ToolInvocationCardProps {
   toolUIPart: ToolUIPart;
   toolCallId: string;
   needsConfirmation: boolean;
+  isCompleted?: boolean;
   onSubmit: ({
     toolCallId,
     result
@@ -33,15 +34,16 @@ interface ToolInvocationCardProps {
     toolCallId: string;
     result: string;
   }) => void;
-  addToolResult: (toolCallId: string, result: string) => void;
+  addToolResult: (params: { tool: string; toolCallId: string; output: string }) => void;
 }
 
 export function ToolInvocationCard({
   toolUIPart,
   toolCallId,
   needsConfirmation,
-  onSubmit
-  // addToolResult
+  isCompleted = false,
+  onSubmit,
+  addToolResult
 }: ToolInvocationCardProps) {
   const [isExpanded, setIsExpanded] = useState(true);
 
@@ -126,8 +128,14 @@ export function ToolInvocationCard({
                           buttonText={resultObj.buttonText}
                           skipMessage={resultObj.skipMessage}
                           skipButtonText={resultObj.skipButtonText}
-                          onSkip={() => {
+                          onSkip={isCompleted ? undefined : () => {
                             console.log('User chose to skip Google Calendar setup');
+                            // Add a tool result to complete the conversation properly
+                            addToolResult({
+                              tool: toolUIPart.type.replace("tool-", ""),
+                              toolCallId,
+                              output: "I understand you'd prefer to skip the Google Calendar setup for now. No problem! I can help you with other tasks instead. What would you like to do?"
+                            });
                           }}
                         />
                       </div>
