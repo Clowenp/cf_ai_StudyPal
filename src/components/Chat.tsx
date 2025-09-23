@@ -34,7 +34,8 @@ import {
 // List of tools that require human confirmation
 // NOTE: this should match the tools that don't have execute functions in tools.ts
 const toolsRequiringConfirmation: (keyof typeof tools)[] = [
-  "getWeatherInformation"
+  "getWeatherInformation",
+  "getTopNews"
 ];
 
 interface ChatProps {

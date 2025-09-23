@@ -5,3 +5,4 @@ OPENAI_API_KEY=sk-proj-1234567890
 GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=your-google-client-secret
 GOOGLE_REDIRECT_URI=https://odd-star-cf31.surfo8970bb.workers.dev/auth/callback
+FIRECRAWL_API_KEY=fc-your-firecrawl-api-key
