@@ -2,6 +2,7 @@
 import { useEffect, useState, use } from "react";
 import { Chat } from "./components/Chat";
 import { StudyTimer } from "./components/StudyTimer";
+import { LandingPage } from "./components/LandingPage";
 import { TimerProvider, useTimerContext } from "./contexts/TimerContext";
 
 // Inner component that uses timer context for dynamic layout
@@ -32,11 +33,23 @@ function AppLayout({ theme, toggleTheme }: { theme: "dark" | "light"; toggleThem
 }
 
 export default function App() {
+  const [showLanding, setShowLanding] = useState(() => {
+    // Check if user has visited before
+    const hasVisited = localStorage.getItem("hasVisitedStudyPal");
+    return !hasVisited;
+  });
+
   const [theme, setTheme] = useState<"dark" | "light">(() => {
     // Check localStorage first, default to dark if not found
     const savedTheme = localStorage.getItem("theme");
     return (savedTheme as "dark" | "light") || "dark";
   });
+
+  const handleEnterApp = () => {
+    // Mark as visited and hide landing page
+    localStorage.setItem("hasVisitedStudyPal", "true");
+    setShowLanding(false);
+  };
 
   useEffect(() => {
     // Apply theme class on mount and when theme changes
@@ -59,6 +72,7 @@ export default function App() {
 
   return (
     <TimerProvider>
+      {showLanding && <LandingPage onEnter={handleEnterApp} />}
       <AppLayout theme={theme} toggleTheme={toggleTheme} />
     </TimerProvider>
   );
