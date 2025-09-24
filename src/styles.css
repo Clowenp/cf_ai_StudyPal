@@ -310,3 +310,39 @@
     transform: rotate(360deg) scale(0.9);
   }
 }
+
+/* Custom scrollbar styles for chat messages */
+.chat-scrollbar {
+  /* Webkit browsers (Chrome, Safari, Edge) */
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: var(--color-neutral-200);
+    border-radius: 9999px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: var(--color-neutral-400);
+    border-radius: 9999px;
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background: var(--color-neutral-500);
+  }
+}
+
+.dark .chat-scrollbar {
+  &::-webkit-scrollbar-track {
+    background: var(--color-neutral-900);
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: var(--color-neutral-600);
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background: var(--color-neutral-500);
+  }
+}

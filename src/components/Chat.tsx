@@ -13,14 +13,12 @@ import { useTimerContext } from "../contexts/TimerContext";
 import { Button } from "@/components/button/Button";
 import { Card } from "@/components/card/Card";
 import { Avatar } from "@/components/avatar/Avatar";
-import { Toggle } from "@/components/toggle/Toggle";
 import { Textarea } from "@/components/textarea/Textarea";
 import { MemoizedMarkdown } from "@/components/memoized-markdown";
 import { ToolInvocationCard } from "@/components/tool-invocation-card/ToolInvocationCard";
 
 // Icon imports
 import {
-  Bug,
   Moon,
   Robot,
   Sun,
@@ -45,7 +43,6 @@ interface ChatProps {
 }
 
 export function Chat({ theme, toggleTheme, className = '' }: ChatProps) {
-  const [showDebug, setShowDebug] = useState(false);
   const [completedToolCalls, setCompletedToolCalls] = useState<Set<string>>(new Set());
   const [textareaHeight, setTextareaHeight] = useState("auto");
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -279,14 +276,6 @@ SYSTEM INSTRUCTION: This is an automatic study session completion message. Do no
           </h2>
         </div>
 
-        <div className="flex items-center gap-2 mr-2">
-          <Bug size={16} />
-          <Toggle
-            toggled={showDebug}
-            aria-label="Toggle debug mode"
-            onClick={() => setShowDebug((prev) => !prev)}
-          />
-        </div>
 
         <Button
           variant="ghost"
@@ -313,7 +302,7 @@ SYSTEM INSTRUCTION: This is an automatic study session completion message. Do no
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-24 max-h-[calc(100vh-10rem)]">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-24 max-h-[calc(100vh-10rem)] chat-scrollbar">
         {agentMessages.length === 0 && (
           <div className="h-full flex items-center justify-center">
             <Card className="p-6 max-w-md mx-auto bg-neutral-100 dark:bg-neutral-900">
@@ -365,11 +354,6 @@ SYSTEM INSTRUCTION: This is an automatic study session completion message. Do no
 
           return (
             <div key={m.id}>
-              {showDebug && (
-                <pre className="text-xs text-muted-foreground overflow-scroll">
-                  {JSON.stringify(m, null, 2)}
-                </pre>
-              )}
               <div
                 className={`flex ${isUser ? "justify-end" : "justify-start"}`}
               >
@@ -465,8 +449,6 @@ SYSTEM INSTRUCTION: This is an automatic study session completion message. Do no
                               toolName as keyof typeof tools
                             );
 
-                          // Skip rendering the card in debug mode (debug shows raw JSON instead)
-                          if (showDebug) return null;
 
                           // Check if this tool call has already been completed
                           const isCompleted = completedToolCalls.has(toolCallId);
