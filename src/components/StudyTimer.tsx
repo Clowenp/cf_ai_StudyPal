@@ -24,13 +24,6 @@ export function StudyTimer({ className = '' }: StudyTimerProps) {
     timer.setTime(customMinutes);
   };
 
-  const presetTimes = [
-    { label: '5 min', minutes: 5 },
-    { label: '15 min', minutes: 15 },
-    { label: '25 min', minutes: 25 },
-    { label: '45 min', minutes: 45 },
-    { label: '60 min', minutes: 60 },
-  ];
 
   return (
     <div className={`flex flex-col h-full ${className}`}>
@@ -45,12 +38,12 @@ export function StudyTimer({ className = '' }: StudyTimerProps) {
       </div>
 
       {/* Timer Display */}
-      <div className="flex-1 p-6 flex flex-col items-center justify-center space-y-6">
+      <div className="flex-1 p-4 flex flex-col items-center justify-center space-y-4">
         {/* Main Timer Display */}
-        <Card className="p-8 bg-neutral-100 dark:bg-neutral-900 text-center min-w-[200px]">
-          <div className="space-y-4">
+        <Card className="p-6 bg-neutral-100 dark:bg-neutral-900 text-center w-full max-w-[280px]">
+          <div className="space-y-3">
             {/* Time Display */}
-            <div className="text-6xl font-mono font-bold text-neutral-800 dark:text-neutral-200">
+            <div className="text-4xl font-mono font-bold text-neutral-800 dark:text-neutral-200">
               {timer.displayTime}
             </div>
             
@@ -63,7 +56,7 @@ export function StudyTimer({ className = '' }: StudyTimerProps) {
             </div>
             
             {/* Status */}
-            <div className="text-sm text-neutral-600 dark:text-neutral-400">
+            <div className="text-xs text-neutral-600 dark:text-neutral-400">
               {timer.isFinished && (
                 <span className="text-green-600 dark:text-green-400 font-semibold">
                   🎉 Time's up!
@@ -89,22 +82,22 @@ export function StudyTimer({ className = '' }: StudyTimerProps) {
         </Card>
 
         {/* Timer Controls */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 justify-center">
           {!timer.isRunning ? (
             <Button
               onClick={timer.startTimer}
               disabled={timer.timeRemaining === 0}
-              className="bg-green-500 hover:bg-green-600 text-white px-6 py-2"
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 text-sm"
             >
-              <Play size={16} className="mr-2" />
+              <Play size={14} className="mr-1" />
               {timer.isPaused ? 'Resume' : 'Start'}
             </Button>
           ) : (
             <Button
               onClick={timer.pauseTimer}
-              className="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2"
+              className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 text-sm"
             >
-              <Pause size={16} className="mr-2" />
+              <Pause size={14} className="mr-1" />
               Pause
             </Button>
           )}
@@ -113,18 +106,17 @@ export function StudyTimer({ className = '' }: StudyTimerProps) {
             onClick={timer.stopTimer}
             disabled={!timer.isRunning && !timer.isPaused}
             variant="ghost"
-            className="px-6 py-2"
+            className="px-3 py-2 text-sm"
           >
-            <Stop size={16} className="mr-2" />
-            Stop
+            <Stop size={14} />
           </Button>
           
           <Button
             onClick={timer.resetTimer}
             variant="ghost"
-            className="px-4 py-2"
+            className="px-3 py-2"
           >
-            <ArrowClockwise size={16} />
+            <ArrowClockwise size={14} />
           </Button>
         </div>
 
@@ -160,77 +152,50 @@ export function StudyTimer({ className = '' }: StudyTimerProps) {
         )}
       </div>
 
-      {/* Timer Settings */}
-      <div className="p-4 border-t border-neutral-300 dark:border-neutral-800 space-y-4">
-        {/* Preset Times */}
-        <div>
-          <h3 className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-            Preset Times
-          </h3>
-          <div className="grid grid-cols-3 gap-2">
-            {presetTimes.map((preset) => (
-              <Button
-                key={preset.minutes}
-                onClick={() => timer.setTime(preset.minutes)}
-                disabled={timer.isRunning}
-                size="sm"
-                variant="ghost"
-                className="text-xs"
-              >
-                {preset.label}
-              </Button>
-            ))}
-          </div>
-        </div>
-
-        {/* Custom Time */}
-        <div>
-          <h3 className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-            Custom Time
-          </h3>
-          <div className="flex items-center gap-2">
-            <Button
-              onClick={() => setCustomMinutes(Math.max(1, customMinutes - 1))}
+      {/* Compact Timer Settings */}
+      <div className="p-3 border-t border-neutral-300 dark:border-neutral-800">
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={() => setCustomMinutes(Math.max(1, customMinutes - 1))}
+            disabled={timer.isRunning}
+            size="sm"
+            variant="ghost"
+            className="px-2 h-8"
+          >
+            <Minus size={14} />
+          </Button>
+          
+          <div className="flex-1 flex items-center justify-center gap-2">
+            <input
+              type="number"
+              value={customMinutes}
+              onChange={(e) => setCustomMinutes(Math.max(1, parseInt(e.target.value) || 1))}
               disabled={timer.isRunning}
-              size="sm"
-              variant="ghost"
-              className="px-2"
-            >
-              <Minus size={14} />
-            </Button>
-            
-            <div className="flex-1 text-center">
-              <input
-                type="number"
-                value={customMinutes}
-                onChange={(e) => setCustomMinutes(Math.max(1, parseInt(e.target.value) || 1))}
-                disabled={timer.isRunning}
-                className="w-16 text-center bg-transparent border border-neutral-300 dark:border-neutral-600 rounded px-2 py-1 text-sm"
-                min="1"
-                max="999"
-              />
-              <span className="text-sm text-neutral-600 dark:text-neutral-400 ml-1">min</span>
-            </div>
-            
-            <Button
-              onClick={() => setCustomMinutes(customMinutes + 1)}
-              disabled={timer.isRunning}
-              size="sm"
-              variant="ghost"
-              className="px-2"
-            >
-              <Plus size={14} />
-            </Button>
+              className="w-12 text-center bg-transparent border border-neutral-300 dark:border-neutral-600 rounded px-1 py-1 text-sm"
+              min="1"
+              max="999"
+            />
+            <span className="text-xs text-neutral-600 dark:text-neutral-400">min</span>
           </div>
+          
+          <Button
+            onClick={() => setCustomMinutes(customMinutes + 1)}
+            disabled={timer.isRunning}
+            size="sm"
+            variant="ghost"
+            className="px-2 h-8"
+          >
+            <Plus size={14} />
+          </Button>
           
           <Button
             onClick={handleSetCustomTime}
             disabled={timer.isRunning}
             size="sm"
-            className="w-full mt-2"
+            className="px-3 h-8 text-xs"
             variant="ghost"
           >
-            Set {customMinutes} minutes
+            Set
           </Button>
         </div>
       </div>

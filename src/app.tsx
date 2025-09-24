@@ -2,6 +2,7 @@
 import { useEffect, useState, use } from "react";
 import { Chat } from "./components/Chat";
 import { StudyTimer } from "./components/StudyTimer";
+import { NotesTextbox } from "./components/NotesTextbox";
 import { LandingPage } from "./components/LandingPage";
 import { TimerProvider, useTimerContext } from "./contexts/TimerContext";
 
@@ -21,11 +22,21 @@ function AppLayout({ theme, toggleTheme }: { theme: "dark" | "light"; toggleThem
           <Chat theme={theme} toggleTheme={toggleTheme} />
         </div>
         
-        {/* Study Timer Section - Right Side */}
+        {/* Study Timer & Notes Section - Right Side */}
         <div className={`min-w-[18rem] transition-all duration-700 ease-in-out ${
           isTimerActive ? 'flex-[2] w-[65%]' : 'flex-[1] w-[25%]'
         }`}>
-          <StudyTimer />
+          <div className="h-full flex flex-col gap-4">
+            {/* Timer takes up about 60% of the height */}
+            <div className="flex-[3]">
+              <StudyTimer />
+            </div>
+            
+            {/* Notes textbox takes up about 40% of the height */}
+            <div className="flex-[2]">
+              <NotesTextbox />
+            </div>
+          </div>
         </div>
       </div>
     </div>
