@@ -20,13 +20,14 @@ import { ToolInvocationCard } from "@/components/tool-invocation-card/ToolInvoca
 // Icon imports
 import {
   Moon,
-  Robot,
   Sun,
   Trash,
   PaperPlaneTilt,
   Stop,
   Microphone,
-  MicrophoneSlash
+  MicrophoneSlash,
+  BookOpen,
+  Sparkle
 } from "@phosphor-icons/react";
 
 // List of tools that require human confirmation
@@ -304,36 +305,74 @@ SYSTEM INSTRUCTION: This is an automatic study session completion message. Do no
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-24 max-h-[calc(100vh-10rem)] chat-scrollbar">
         {agentMessages.length === 0 && (
-          <div className="h-full flex items-center justify-center">
-            <Card className="p-6 max-w-md mx-auto bg-neutral-100 dark:bg-neutral-900">
-              <div className="text-center space-y-4">
-                <div className="bg-[#E91E63]/10 text-[#E91E63] rounded-full p-3 inline-flex">
-                  <Robot size={24} />
+          <div className="h-full flex items-center justify-center p-4">
+            <div className="max-w-lg mx-auto text-center">
+              {/* Modern Hero Section */}
+              <div className="relative mb-8">
+                {/* Decorative background elements */}
+                <div className="absolute inset-0 -z-10">
+                  <div className="absolute top-4 left-8 w-2 h-2 bg-[#E91E63]/20 rounded-full animate-pulse"></div>
+                  <div className="absolute top-12 right-12 w-1 h-1 bg-[#E91E63]/30 rounded-full animate-pulse delay-300"></div>
+                  <div className="absolute bottom-8 left-16 w-1.5 h-1.5 bg-[#E91E63]/25 rounded-full animate-pulse delay-700"></div>
                 </div>
-                <h3 className="font-semibold text-lg">Study Pal</h3>
-                <p className="text-muted-foreground text-sm">
-                  Study with me! Ask me about anything ...
-                </p>
-                <ul className="text-sm text-left space-y-2">
-                  <li className="flex items-center gap-2">
-                    <span className="text-[#E91E63]">•</span>
-                    <span>Voice input (click the microphone)</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="text-[#E91E63]">•</span>
-                    <span>I want to study Math (auto-starts timer)</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="text-[#E91E63]">•</span>
-                    <span>Study for online lecture notes</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="text-[#E91E63]">•</span>
-                    <span>Authorize Google Calendar and see events</span>
-                  </li>
-                </ul>
+                
+                {/* Main icon with gradient background */}
+                <div className="relative inline-flex items-center justify-center">
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#E91E63]/20 via-[#E91E63]/10 to-transparent rounded-full blur-xl scale-150"></div>
+                  <div className="relative bg-gradient-to-br from-[#E91E63]/15 to-[#E91E63]/5 p-6 rounded-2xl border border-[#E91E63]/10 backdrop-blur-sm">
+                    <BookOpen size={32} className="text-[#E91E63]" />
+                  </div>
+                </div>
               </div>
-            </Card>
+
+              {/* Title with gradient */}
+              <div className="mb-6">
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-[#E91E63] via-[#E91E63]/90 to-[#E91E63]/70 bg-clip-text text-transparent mb-2">
+                  Study Pal
+                </h1>
+                <p className="text-neutral-600 dark:text-neutral-400 text-base leading-relaxed">
+                  Your AI-powered study companion. Let's learn together!
+                </p>
+              </div>
+
+              {/* Feature cards */}
+              <div className="grid gap-3 mb-6">
+                <Card className="p-4 bg-gradient-to-r from-neutral-50 to-neutral-100/50 dark:from-neutral-900/50 dark:to-neutral-800/30 border border-neutral-200/50 dark:border-neutral-700/50 hover:border-[#E91E63]/20 transition-all duration-300">
+                  <div className="flex items-center gap-3 text-left">
+                    <div className="flex-shrink-0 w-2 h-2 bg-[#E91E63] rounded-full"></div>
+                    <span className="text-sm text-neutral-700 dark:text-neutral-300">Voice input (click the microphone)</span>
+                  </div>
+                </Card>
+                
+                <Card className="p-4 bg-gradient-to-r from-neutral-50 to-neutral-100/50 dark:from-neutral-900/50 dark:to-neutral-800/30 border border-neutral-200/50 dark:border-neutral-700/50 hover:border-[#E91E63]/20 transition-all duration-300">
+                  <div className="flex items-center gap-3 text-left">
+                    <div className="flex-shrink-0 w-2 h-2 bg-[#E91E63] rounded-full"></div>
+                    <span className="text-sm text-neutral-700 dark:text-neutral-300">I want to study Math (auto-starts timer)</span>
+                  </div>
+                </Card>
+                
+                <Card className="p-4 bg-gradient-to-r from-neutral-50 to-neutral-100/50 dark:from-neutral-900/50 dark:to-neutral-800/30 border border-neutral-200/50 dark:border-neutral-700/50 hover:border-[#E91E63]/20 transition-all duration-300">
+                  <div className="flex items-center gap-3 text-left">
+                    <div className="flex-shrink-0 w-2 h-2 bg-[#E91E63] rounded-full"></div>
+                    <span className="text-sm text-neutral-700 dark:text-neutral-300">Study for online lecture notes</span>
+                  </div>
+                </Card>
+                
+                <Card className="p-4 bg-gradient-to-r from-neutral-50 to-neutral-100/50 dark:from-neutral-900/50 dark:to-neutral-800/30 border border-neutral-200/50 dark:border-neutral-700/50 hover:border-[#E91E63]/20 transition-all duration-300">
+                  <div className="flex items-center gap-3 text-left">
+                    <div className="flex-shrink-0 w-2 h-2 bg-[#E91E63] rounded-full"></div>
+                    <span className="text-sm text-neutral-700 dark:text-neutral-300">Authorize Google Calendar and see events</span>
+                  </div>
+                </Card>
+              </div>
+
+              {/* Call to action */}
+              <div className="flex items-center justify-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
+                <Sparkle size={14} className="text-[#E91E63]/60" />
+                <span>Start a conversation to begin studying</span>
+                <Sparkle size={14} className="text-[#E91E63]/60" />
+              </div>
+            </div>
           </div>
         )}
 
