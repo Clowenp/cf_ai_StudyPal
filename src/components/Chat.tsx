@@ -11,7 +11,6 @@ import { useTimerContext } from "../contexts/TimerContext";
 
 // Component imports
 import { Card } from "@/components/card/Card";
-import { Avatar } from "@/components/avatar/Avatar";
 import { Textarea } from "@/components/textarea/Textarea";
 import { MemoizedMarkdown } from "@/components/memoized-markdown";
 import { ToolInvocationCard } from "@/components/tool-invocation-card/ToolInvocationCard";
@@ -415,7 +414,9 @@ SYSTEM INSTRUCTION: This is an automatic study session completion message. Do no
                   }`}
                 >
                   {showAvatar && !isUser ? (
-                    <Avatar username={"AI"} />
+                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-[#E91E63]/10 to-[#E91E63]/5 border border-[#E91E63]/20">
+                      <GraduationCap size={18} className="text-[#E91E63]" />
+                    </div>
                   ) : (
                     !isUser && <div className="w-8" />
                   )}
