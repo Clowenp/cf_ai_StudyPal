@@ -10,7 +10,6 @@ import { useStudySession } from "../hooks/useStudySession";
 import { useTimerContext } from "../contexts/TimerContext";
 
 // Component imports
-import { Button } from "@/components/button/Button";
 import { Card } from "@/components/card/Card";
 import { Avatar } from "@/components/avatar/Avatar";
 import { Textarea } from "@/components/textarea/Textarea";
@@ -26,8 +25,9 @@ import {
   Stop,
   Microphone,
   MicrophoneSlash,
-  BookOpen,
-  Sparkle
+  Sparkle,
+  ChatCircle,
+  GraduationCap
 } from "@phosphor-icons/react";
 
 // List of tools that require human confirmation
@@ -252,54 +252,63 @@ SYSTEM INSTRUCTION: This is an automatic study session completion message. Do no
         ? '0 10px 25px -5px rgba(233, 30, 99, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1)' 
         : '0 25px 50px -12px rgba(233, 30, 99, 0.15), 0 25px 25px -12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.1)'
     }}>
-      <div className="px-4 py-3 border-b border-neutral-300 dark:border-neutral-800 flex items-center gap-3 sticky top-0 z-10 bg-gradient-to-r from-transparent via-[#E91E63]/5 to-transparent">
-        <div className="flex items-center justify-center h-8 w-8">
-          <svg
-            width="28px"
-            height="28px"
-            className="text-[#E91E63]"
-            data-icon="agents"
+      {/* Modern Header */}
+      <div className="relative px-6 py-4 border-b border-neutral-200/60 dark:border-neutral-700/60 flex items-center gap-4 sticky top-0 z-10 backdrop-blur-xl bg-white/80 dark:bg-neutral-950/80">
+        {/* Subtle gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#E91E63]/3 via-transparent to-[#E91E63]/3 pointer-events-none"></div>
+        
+        {/* Logo with enhanced styling */}
+        <div className="relative flex items-center gap-3">
+          <div className="relative">
+            {/* Glow effect behind icon */}
+            <div className="absolute inset-0 bg-[#E91E63]/20 rounded-lg blur-md scale-110"></div>
+            <div className="relative bg-gradient-to-br from-[#E91E63]/10 to-[#E91E63]/5 p-2 rounded-lg border border-[#E91E63]/10">
+              <GraduationCap size={24} className="text-[#E91E63]" />
+            </div>
+          </div>
+          
+          {/* Title with enhanced typography */}
+          <div className="flex flex-col">
+            <h1 className="text-lg font-bold bg-gradient-to-r from-[#E91E63] via-[#E91E63]/90 to-[#E91E63]/70 bg-clip-text text-transparent leading-tight">
+              Study Pal
+            </h1>
+            <div className="flex items-center gap-1">
+              <div className="w-1 h-1 bg-[#E91E63]/40 rounded-full"></div>
+              <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">AI Study Companion</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Spacer */}
+        <div className="flex-1"></div>
+
+        {/* Action buttons with modern styling */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={toggleTheme}
+            className="relative group p-2.5 rounded-xl bg-neutral-100/60 dark:bg-neutral-800/60 hover:bg-neutral-200/80 dark:hover:bg-neutral-700/80 border border-neutral-200/40 dark:border-neutral-700/40 transition-all duration-200 hover:scale-105 active:scale-95"
+            aria-label="Toggle theme"
           >
-            <title>Cloudflare Agents</title>
-            <symbol id="ai:local:agents" viewBox="0 0 80 79">
-              <path
-                fill="currentColor"
-                d="M69.3 39.7c-3.1 0-5.8 2.1-6.7 5H48.3V34h4.6l4.5-2.5c1.1.8 2.5 1.2 3.9 1.2 3.8 0 7-3.1 7-7s-3.1-7-7-7-7 3.1-7 7c0 .9.2 1.8.5 2.6L51.9 30h-3.5V18.8h-.1c-1.3-1-2.9-1.6-4.5-1.9h-.2c-1.9-.3-3.9-.1-5.8.6-.4.1-.8.3-1.2.5h-.1c-.1.1-.2.1-.3.2-1.7 1-3 2.4-4 4 0 .1-.1.2-.1.2l-.3.6c0 .1-.1.1-.1.2v.1h-.6c-2.9 0-5.7 1.2-7.7 3.2-2.1 2-3.2 4.8-3.2 7.7 0 .7.1 1.4.2 2.1-1.3.9-2.4 2.1-3.2 3.5s-1.2 2.9-1.4 4.5c-.1 1.6.1 3.2.7 4.7s1.5 2.9 2.6 4c-.8 1.8-1.2 3.7-1.1 5.6 0 1.9.5 3.8 1.4 5.6s2.1 3.2 3.6 4.4c1.3 1 2.7 1.7 4.3 2.2v-.1q2.25.75 4.8.6h.1c0 .1.1.1.1.1.9 1.7 2.3 3 4 4 .1.1.2.1.3.2h.1c.4.2.8.4 1.2.5 1.4.6 3 .8 4.5.7.4 0 .8-.1 1.3-.1h.1c1.6-.3 3.1-.9 4.5-1.9V62.9h3.5l3.1 1.7c-.3.8-.5 1.7-.5 2.6 0 3.8 3.1 7 7 7s7-3.1 7-7-3.1-7-7-7c-1.5 0-2.8.5-3.9 1.2l-4.6-2.5h-4.6V48.7h14.3c.9 2.9 3.5 5 6.7 5 3.8 0 7-3.1 7-7s-3.1-7-7-7m-7.9-16.9c1.6 0 3 1.3 3 3s-1.3 3-3 3-3-1.3-3-3 1.4-3 3-3m0 41.4c1.6 0 3 1.3 3 3s-1.3 3-3 3-3-1.3-3-3 1.4-3 3-3M44.3 72c-.4.2-.7.3-1.1.3-.2 0-.4.1-.5.1h-.2c-.9.1-1.7 0-2.6-.3-1-.3-1.9-.9-2.7-1.7-.7-.8-1.3-1.7-1.6-2.7l-.3-1.5v-.7q0-.75.3-1.5c.1-.2.1-.4.2-.7s.3-.6.5-.9c0-.1.1-.1.1-.2.1-.1.1-.2.2-.3s.1-.2.2-.3c0 0 0-.1.1-.1l.6-.6-2.7-3.5c-1.3 1.1-2.3 2.4-2.9 3.9-.2.4-.4.9-.5 1.3v.1c-.1.2-.1.4-.1.6-.3 1.1-.4 2.3-.3 3.4-.3 0-.7 0-1-.1-2.2-.4-4.2-1.5-5.5-3.2-1.4-1.7-2-3.9-1.8-6.1q.15-1.2.6-2.4l.3-.6c.1-.2.2-.4.3-.5 0 0 0-.1.1-.1.4-.7.9-1.3 1.5-1.9 1.6-1.5 3.8-2.3 6-2.3q1.05 0 2.1.3v-4.5c-.7-.1-1.4-.2-2.1-.2-1.8 0-3.5.4-5.2 1.1-.7.3-1.3.6-1.9 1s-1.1.8-1.7 1.3c-.3.2-.5.5-.8.8-.6-.8-1-1.6-1.3-2.6-.2-1-.2-2 0-2.9.2-1 .6-1.9 1.3-2.6.6-.8 1.4-1.4 2.3-1.8l1.8-.9-.7-1.9c-.4-1-.5-2.1-.4-3.1s.5-2.1 1.1-2.9q.9-1.35 2.4-2.1c.9-.5 2-.8 3-.7.5 0 1 .1 1.5.2 1 .2 1.8.7 2.6 1.3s1.4 1.4 1.8 2.3l4.1-1.5c-.9-2-2.3-3.7-4.2-4.9q-.6-.3-.9-.6c.4-.7 1-1.4 1.6-1.9.8-.7 1.8-1.1 2.9-1.3.9-.2 1.7-.1 2.6 0 .4.1.7.2 1.1.3V72zm25-22.3c-1.6 0-3-1.3-3-3 0-1.6 1.3-3 3-3s3 1.3 3 3c0 1.6-1.3 3-3 3"
-              />
-            </symbol>
-            <use href="#ai:local:agents" />
-          </svg>
+            <div className="absolute inset-0 bg-gradient-to-br from-[#E91E63]/5 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+            <div className="relative text-neutral-600 dark:text-neutral-300 group-hover:text-[#E91E63] transition-colors duration-200">
+              {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+            </div>
+          </button>
+
+          <button
+            onClick={() => {
+              clearHistory();
+              setCompletedToolCalls(new Set());
+            }}
+            className="relative group p-2.5 rounded-xl bg-neutral-100/60 dark:bg-neutral-800/60 hover:bg-red-50/80 dark:hover:bg-red-900/20 border border-neutral-200/40 dark:border-neutral-700/40 hover:border-red-200/60 dark:hover:border-red-800/60 transition-all duration-200 hover:scale-105 active:scale-95"
+            aria-label="Clear chat history"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+            <div className="relative text-neutral-600 dark:text-neutral-300 group-hover:text-red-500 transition-colors duration-200">
+              <Trash size={18} />
+            </div>
+          </button>
         </div>
-
-        <div className="flex-1">
-          <h2 className="font-semibold text-base bg-gradient-to-r from-[#E91E63] to-[#E91E63]/80 bg-clip-text text-transparent">
-            Study Pal
-          </h2>
-        </div>
-
-
-        <Button
-          variant="ghost"
-          size="md"
-          shape="square"
-          className="rounded-full h-9 w-9"
-          onClick={toggleTheme}
-        >
-          {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
-        </Button>
-
-        <Button
-          variant="ghost"
-          size="md"
-          shape="square"
-          className="rounded-full h-9 w-9"
-          onClick={() => {
-            clearHistory();
-            setCompletedToolCalls(new Set()); // Clear completed tool calls when clearing history
-          }}
-        >
-          <Trash size={20} />
-        </Button>
       </div>
 
       {/* Messages */}
@@ -320,7 +329,7 @@ SYSTEM INSTRUCTION: This is an automatic study session completion message. Do no
                 <div className="relative inline-flex items-center justify-center">
                   <div className="absolute inset-0 bg-gradient-to-br from-[#E91E63]/20 via-[#E91E63]/10 to-transparent rounded-full blur-xl scale-150"></div>
                   <div className="relative bg-gradient-to-br from-[#E91E63]/15 to-[#E91E63]/5 p-6 rounded-2xl border border-[#E91E63]/10 backdrop-blur-sm">
-                    <BookOpen size={32} className="text-[#E91E63]" />
+                    <ChatCircle size={32} className="text-[#E91E63]" />
                   </div>
                 </div>
               </div>
