@@ -16,8 +16,11 @@ An AI-powered study companion built with Cloudflare Agents that helps students l
 
 **Example Prompts**
 - I want to study math => start adaptive timer
-- Summarize 
-- Show me my calendar => displays
+- Summarize information from https://en.wikipedia.org/wiki/Cloudflare
+
+## Video Demo
+
+[Watch video demo](https://drive.google.com/file/d/1zO_ZmP4iGQn_-ryWVtLM5wahtp0EeeL5/view?usp=sharing)
 
 ## Prerequisites
 
