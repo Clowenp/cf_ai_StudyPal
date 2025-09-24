@@ -1,6 +1,6 @@
 # Study Pal
 
-An AI-powered study companion built with Cloudflare Agents that helps students learn more effectively through intelligent conversation, integrated study tools, and adaptive timing features.
+An AI-powered study companion built with Cloudflare Agents that helps students learn more effectively through intelligent conversation, integrated study tools, and adaptive study timer.
 
 ## Features
 
@@ -13,6 +13,11 @@ An AI-powered study companion built with Cloudflare Agents that helps students l
 - **Integrated Note-Taking**: Built-in notes system with export functionality
 - **Dynamic Landing Page**: Animated welcome screen with cloud effects
 - **Study Session Management**: Automatic layout adaptation when study sessions begin
+
+**Example Prompts**
+- I want to study math => start adaptive timer
+- Summarize 
+- Show me my calendar => displays
 
 ## Prerequisites
 
@@ -82,3 +87,8 @@ The application will be available at `http://localhost:8787`
 - More feedback from study sessions for AI to gain more context
 - Store more explanatory variates for each topic study to gain more insights
 - Store analytics of study sessions within structured database for analysis
+
+## References
+
+Adaptation of https://github.com/cloudflare/agents-starter
+See PROMPTS.md for AI prompts
