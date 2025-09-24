@@ -64,6 +64,8 @@ npm start
 
 The application will be available at `http://localhost:8787`
 
+Also deployed to and hosted on Cloudflare [https://odd-star-cf31.surfo8970bb.workers.dev](https://odd-star-cf31.surfo8970bb.workers.dev) but does not have Secret Keys attached. This is because I am using credits payed for personally from my Anthropic account (I wan't to protect from malicious actors spamming the chat and incurring a very large cost).
+
 ## Project Structure
 
 ```
