@@ -317,15 +317,19 @@ SYSTEM INSTRUCTION: This is an automatic study session completion message. Do no
                 <ul className="text-sm text-left space-y-2">
                   <li className="flex items-center gap-2">
                     <span className="text-[#E91E63]">•</span>
-                    <span>Local time in different locations</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="text-[#E91E63]">•</span>
                     <span>Voice input (click the microphone)</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="text-[#E91E63]">•</span>
-                    <span>"I want to study Math" (auto-starts timer)</span>
+                    <span>I want to study Math (auto-starts timer)</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-[#E91E63]">•</span>
+                    <span>Study for online lecture notes</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-[#E91E63]">•</span>
+                    <span>Authorize Google Calendar and see events</span>
                   </li>
                 </ul>
               </div>
