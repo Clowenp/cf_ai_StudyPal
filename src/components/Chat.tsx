@@ -243,20 +243,20 @@ SYSTEM INSTRUCTION: This is an automatic study session completion message. Do no
   return (
     <div className={`flex flex-col h-full rounded-md overflow-hidden relative transition-all duration-500 ease-in-out ${
       isTimerActive 
-        ? 'shadow-lg border-2 border-[#F48120]/20' 
-        : 'shadow-2xl border-2 border-[#F48120]/30'
+        ? 'shadow-lg border-2 border-[#E91E63]/20' 
+        : 'shadow-2xl border-2 border-[#E91E63]/30'
     } ${className}`}
     style={{
       boxShadow: isTimerActive 
-        ? '0 10px 25px -5px rgba(244, 129, 32, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1)' 
-        : '0 25px 50px -12px rgba(244, 129, 32, 0.15), 0 25px 25px -12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.1)'
+        ? '0 10px 25px -5px rgba(233, 30, 99, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1)' 
+        : '0 25px 50px -12px rgba(233, 30, 99, 0.15), 0 25px 25px -12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.1)'
     }}>
-      <div className="px-4 py-3 border-b border-neutral-300 dark:border-neutral-800 flex items-center gap-3 sticky top-0 z-10 bg-gradient-to-r from-transparent via-[#F48120]/5 to-transparent">
+      <div className="px-4 py-3 border-b border-neutral-300 dark:border-neutral-800 flex items-center gap-3 sticky top-0 z-10 bg-gradient-to-r from-transparent via-[#E91E63]/5 to-transparent">
         <div className="flex items-center justify-center h-8 w-8">
           <svg
             width="28px"
             height="28px"
-            className="text-[#F48120]"
+            className="text-[#E91E63]"
             data-icon="agents"
           >
             <title>Cloudflare Agents</title>
@@ -271,7 +271,7 @@ SYSTEM INSTRUCTION: This is an automatic study session completion message. Do no
         </div>
 
         <div className="flex-1">
-          <h2 className="font-semibold text-base bg-gradient-to-r from-[#F48120] to-[#F48120]/80 bg-clip-text text-transparent">
+          <h2 className="font-semibold text-base bg-gradient-to-r from-[#E91E63] to-[#E91E63]/80 bg-clip-text text-transparent">
             Study Pal
           </h2>
         </div>
@@ -307,7 +307,7 @@ SYSTEM INSTRUCTION: This is an automatic study session completion message. Do no
           <div className="h-full flex items-center justify-center">
             <Card className="p-6 max-w-md mx-auto bg-neutral-100 dark:bg-neutral-900">
               <div className="text-center space-y-4">
-                <div className="bg-[#F48120]/10 text-[#F48120] rounded-full p-3 inline-flex">
+                <div className="bg-[#E91E63]/10 text-[#E91E63] rounded-full p-3 inline-flex">
                   <Robot size={24} />
                 </div>
                 <h3 className="font-semibold text-lg">Study Pal</h3>
@@ -316,15 +316,15 @@ SYSTEM INSTRUCTION: This is an automatic study session completion message. Do no
                 </p>
                 <ul className="text-sm text-left space-y-2">
                   <li className="flex items-center gap-2">
-                    <span className="text-[#F48120]">•</span>
+                    <span className="text-[#E91E63]">•</span>
                     <span>Local time in different locations</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-[#F48120]">•</span>
+                    <span className="text-[#E91E63]">•</span>
                     <span>Voice input (click the microphone)</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-[#F48120]">•</span>
+                    <span className="text-[#E91E63]">•</span>
                     <span>"I want to study Math" (auto-starts timer)</span>
                   </li>
                 </ul>

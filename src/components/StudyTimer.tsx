@@ -37,7 +37,7 @@ export function StudyTimer({ className = '' }: StudyTimerProps) {
       {/* Header */}
       <div className="px-4 py-3 border-b border-neutral-300 dark:border-neutral-800 flex items-center gap-3">
         <div className="flex items-center justify-center h-8 w-8">
-          <Timer size={24} className="text-blue-500" />
+          <Timer size={24} className="text-[#E91E63]" />
         </div>
         <div className="flex-1">
           <h2 className="font-semibold text-base">Study Timer</h2>
@@ -57,7 +57,7 @@ export function StudyTimer({ className = '' }: StudyTimerProps) {
             {/* Progress Bar */}
             <div className="w-full bg-neutral-200 dark:bg-neutral-700 rounded-full h-2">
               <div
-                className="bg-blue-500 h-2 rounded-full transition-all duration-1000 ease-linear"
+                className="bg-[#E91E63] h-2 rounded-full transition-all duration-1000 ease-linear"
                 style={{ width: `${timer.progress}%` }}
               />
             </div>
@@ -70,7 +70,7 @@ export function StudyTimer({ className = '' }: StudyTimerProps) {
                 </span>
               )}
               {timer.isRunning && (
-                <span className="text-blue-600 dark:text-blue-400">
+                <span className="text-[#E91E63] dark:text-[#E91E63]/80">
                   ⏱️ Timer running...
                 </span>
               )}
